@@ -1,0 +1,10 @@
+resolver: lts-22.4
+
+ghc-options:
+  # locally install Haddocs for "everything": deps and the project
+  $everything: -haddock
+  # speed up project build via module-parallel compile in GHC itself
+  $targets: -j
+
+packages:
+  - .

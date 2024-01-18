@@ -1,0 +1,121 @@
+name: verkada-test
+version: 0.1.0
+github: worm2fed/verkada-test
+license: BSD-3-Clause
+author: "Andrii Demydenko"
+maintainer: "worm2fed@gmail.com"
+copyright: "2024 Andrii Demydenko"
+description: Please see the README on GitHub at <https://github.com/worm2fed/verkada-test#readme>
+
+extra-source-files:
+  - README.md
+
+verbatim:
+  cabal-version: 2.4
+
+# GHC's GHC2021 language extension is supported by GHC >= 9.2.1
+# for more details see: https://github.com/ghc-proposals/ghc-proposals/blob/master/proposals/0380-ghc2021.rst
+language: GHC2021
+
+default-extensions:
+  - AllowAmbiguousTypes
+  - BlockArguments
+  - DataKinds
+  - DeriveAnyClass
+  - DerivingStrategies
+  - DerivingVia
+  - GADTs
+  - LambdaCase
+  - MultiWayIf
+  - NegativeLiterals
+  - NoImplicitPrelude
+  - NumDecimals
+  - OverloadedLabels
+  - OverloadedStrings
+  - OverloadedStrings
+  - QuasiQuotes
+  - RecordWildCards
+  - TemplateHaskell
+  - TypeFamilies
+  - UndecidableInstances
+  - UndecidableSuperClasses
+  - ViewPatterns
+
+ghc-options:
+  # For details on warnings:
+  # https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
+
+  # Enable all warnings and disable the ones we don’t care about
+  - -Weverything
+
+  # Turns off the more strict -Wmissing-signatures
+  # See https://ghc.haskell.org/trac/ghc/ticket/14794#ticket
+  - -Wno-missing-exported-signatures
+  # Requires explicit imports of _every_ function (e.g. ‘$’); too strict
+  - -Wno-missing-import-lists
+  # When GHC can’t specialize a polymorphic function. No big deal and requires
+  # fixing underlying libraries to solve
+  - -Wno-missed-specialisations
+  # See missed-specialisations
+  - -Wno-all-missed-specialisations
+  # Don’t use Safe Haskell warnings
+  - -Wno-unsafe
+  - -Wno-safe
+  - -Wno-inferred-safe-imports
+  - -Wno-missing-safe-haskell-mode
+  # Warning for polymorphic local bindings; nothing wrong with those
+  - -Wno-missing-local-signatures
+  # Don’t warn if the monomorphism restriction is used
+  - -Wno-monomorphism-restriction
+  # Still need it, because generated cabal module uses prepositive position
+  - -Wno-prepositive-qualified-module
+  # Do not warn about missing kind signatures; there is no much sense for it
+  # now, our project is not so type-complicated.
+  - -Wno-missing-kind-signatures
+
+dependencies:
+  - base >=4.10 && < 5
+  - relude >= 1.1
+
+library:
+  source-dirs: src
+  dependencies:
+    - aeson
+    - co-log
+    - containers
+    - deriving-aeson
+    - mtl
+    - pretty-simple
+    - servant
+    - servant-server
+    - time
+    - wai-extra
+    - warp
+
+executables:
+  verkada-test-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      # Enable -N to use multiple threads and -T for runtime stats.
+      # Increase allocation area by using the recommended -A64m option.
+      # Also increase the allocation area for large objects with -AL256m,
+      # since this area is shared between all threads and thus with high -N
+      # values get used up too soon.
+      - '"-with-rtsopts=-T -N -A64m -AL256m"'
+    dependencies:
+      - verkada-test
+
+      - with-utf8
+
+tests:
+  verkada-test-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - '"-with-rtsopts=-N -A64m -AL256m"'
+    dependencies:
+      - verkada-test

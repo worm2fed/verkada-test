@@ -1,0 +1,14 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "verkada-test:lib"
+
+    - path: "./app"
+      component: "verkada-test:exe:verkada-test-exe"
+
+    - path: "./tests"
+      component: "verkada-test:test:verkada-test-test"
+
+dependencies:
+  - ./package.yaml
+  - ./stack.yaml
