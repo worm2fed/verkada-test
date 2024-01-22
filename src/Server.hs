@@ -14,7 +14,7 @@ import Servant.Server.Generic (AsServerT)
 import Application (App, Env, WithEffects, runWithLog, runWithNewEnv)
 import Error (ErrorWithSource (..), toHttpError)
 import Logger qualified
-import Routes.Mock (MockRoutes, mockEndpoints)
+import Routes.Task (TaskRoutes, taskEndpoints)
 
 -- | Web server.
 server :: (HasCallStack) => IO ()
@@ -37,8 +37,8 @@ server = runWithNewEnv $ do
 type API = NamedRoutes Routes
 
 -- | Represents combination of all routes, available in Union.
-data Routes mode = Routes
-  { rSearch :: mode :- MockRoutes
+newtype Routes mode = Routes
+  { rTask :: mode :- TaskRoutes
   }
   deriving stock (Generic)
 
@@ -46,5 +46,5 @@ data Routes mode = Routes
 routes :: (WithEffects m) => Routes (AsServerT m)
 routes =
   Routes
-    { rSearch = mockEndpoints
+    { rTask = taskEndpoints
     }

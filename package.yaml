@@ -86,9 +86,9 @@ library:
     - deriving-aeson
     - mtl
     - pretty-simple
+    - random
     - servant
     - servant-server
-    - time
     - wai-extra
     - warp
 

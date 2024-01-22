@@ -15,15 +15,19 @@ import Relude
 
 import Control.Exception (catch, throwIO, try)
 import Control.Monad.Except (MonadError (..))
+import Data.Map.Strict qualified as M
+import Data.Sequence qualified as Seq
 
 import Error (Error, ErrorWithSource)
 import Error qualified
 import Logger qualified
+import Types (SumCommandReq, SumCommandResp)
 
 -- | Contains all available effects in constraint.
 -- NOTE: use it only in signature for endpoints.
 type WithEffects m =
-  ( WithLog m
+  ( MonadIO m
+  , WithLog m
   , WithError m
   )
 
@@ -37,12 +41,16 @@ type WithError m = Error.With Error m
 data Env = Env
   { eLogger :: !(Logger.Logger App)
   -- ^ Logger action.
+  , eQueue :: !(TVar (Seq SumCommandReq))
+  , eResponses :: !(TVar (Map Int SumCommandResp))
   }
 
 -- | Create 'Env'.
 buildEnv :: IO Env
 buildEnv = do
   let eLogger = Logger.setLogger Logger.Debug
+  eQueue <- newTVarIO Seq.empty
+  eResponses <- newTVarIO M.empty
   pure Env{..}
 
 -- | Main application monad.
